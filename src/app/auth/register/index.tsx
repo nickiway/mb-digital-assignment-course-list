@@ -62,14 +62,15 @@ const RegisterForm = () => {
     mode: 'all',
     resolver: zodResolver(schema),
     defaultValues: {
-      name: 'dsadsadsa',
-      email: 'dsadasdasdsa@dsadsa.com',
-      password: 'dsadsadsaA1!',
-      confirmPassword: 'dsadsadsaA1!',
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
   const onSubmit = async (values: RegisterFieldType) => {
+    // we supposed to hash password here for better security but for assignment i guess it is ok :)
     try {
       const { data } = await axios.post(`${API_URL}/users`, values);
       toast.success('You were registered successfully.');

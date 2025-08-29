@@ -6,14 +6,20 @@ import { Box, IconButton, InputAdornment, TextField, Button } from '@mui/materia
 import { Visibility, VisibilityOff, AlternateEmail } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { useState } from 'react';
-import { userLogged } from '../../utils/auth';
+import { loginUser, userLogged } from '../../utils/auth';
 import { Navigate } from 'react-router';
+import { API_URL } from '../../constants';
+import axios from 'axios';
+import type { UserType } from '../../types/user';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   // if user logged in we redirect user to dashboard page
   if (userLogged()) {
     return <Navigate to={'/dashboard'} replace />;
   }
+
   return (
     <>
       <div>Login page</div>
@@ -35,6 +41,7 @@ const schema = zod.object({
 type FieldType = zod.infer<typeof schema>;
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const {
     control,
@@ -49,9 +56,39 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: FieldType) => {
-    console.log(values);
+  const fetchUserByEmail = async (email: string): Promise<UserType | null> => {
+    try {
+      const { data } = await axios.get(`${API_URL}/users`);
+      return data.find((user: UserType) => user.email === email) || null;
+    } catch (error) {
+      toast.error('Failed to fetch users');
+      console.error(error);
+      return null;
+    }
   };
+
+  const isPasswordValid = (user: UserType, password: string): boolean => {
+    return user.password === password;
+  };
+
+  const onSubmit = async (values: FieldType) => {
+    const user = await fetchUserByEmail(values.email);
+
+    if (!user) {
+      toast.error('There is no such user');
+      return;
+    }
+
+    if (!isPasswordValid(user, values.password)) {
+      toast.error('Incorrect credentials');
+      return;
+    }
+
+    loginUser(user);
+    toast.success('You logged in successfully.');
+    navigate('/dashboard');
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box maxWidth={'sm'}>
