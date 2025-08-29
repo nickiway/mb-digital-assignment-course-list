@@ -1,13 +1,32 @@
 /** @format */
 
-import './App.css';
+import { Route, Routes } from 'react-router';
+import { Container } from '@mui/material';
+import { Outlet } from 'react-router';
 
-function App() {
+import LoginPage from './app/auth/login';
+import RegisterPage from './app/auth/register';
+import DashboardPage from './app/dashboard';
+
+const App = () => {
   return (
-    <>
-      <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
-    </>
+    <Routes>
+      <Route index element={<div>Home</div>}></Route>
+      <Route path='dashboard' element={<DashboardPage />}></Route>
+      <Route element={<RootLayout />}>
+        <Route path='login' element={<LoginPage />} />
+        <Route path='register' element={<RegisterPage />} />
+      </Route>
+    </Routes>
   );
-}
+};
+
+const RootLayout = () => {
+  return (
+    <Container>
+      <Outlet />
+    </Container>
+  );
+};
 
 export default App;
