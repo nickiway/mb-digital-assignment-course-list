@@ -1,16 +1,25 @@
 /** @format */
 
-import { Navigate } from 'react-router';
-import { userLogged } from '../utils/auth';
 import CourseList from './components/CourseList';
+import { Breadcrumbs, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const DashboardPage = () => {
-  if (!userLogged()) {
-    return <Navigate to={'/login'} replace />;
-  }
+  const breadcrumbs = [
+    <Link key='1' color='inherit' to='/'>
+      Home
+    </Link>,
+
+    <Typography key='2' sx={{ color: 'text.primary' }}>
+      Dashboard
+    </Typography>,
+  ];
   return (
     <>
-      <div>DashboardPage</div>
+      <Breadcrumbs separator='›' aria-label='breadcrumb'>
+        {breadcrumbs}
+      </Breadcrumbs>
+
       <CourseList />
     </>
   );

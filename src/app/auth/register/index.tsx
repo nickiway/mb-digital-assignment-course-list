@@ -2,32 +2,28 @@
 
 import * as zod from 'zod';
 import axios from 'axios';
-import { API_URL } from '../../constants';
+import { API_URL } from '../../../constants';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { Box, IconButton, InputAdornment, TextField, Button } from '@mui/material';
+import { Box, IconButton, InputAdornment, TextField, Button, Typography } from '@mui/material';
 import { Visibility, VisibilityOff, AlternateEmail, Person } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 
-import type { UserType } from '../../types/user';
+import type { UserType } from '../../../types/user';
 import { toast } from 'react-toastify';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { loginUser, userLogged } from '../../utils/auth';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../providers/AuthProvider';
 
 const RegisterPage = () => {
   // if user logged in we redirect user to dashboard page
-  if (userLogged()) {
-    return <Navigate to={'/dashboard'} replace />;
-  }
 
   return (
     <>
-      <div>Register page</div>
-      <RegisterForm />
-
-      <Box marginY={2}>
-        <Link to={'/login'}>Login page</Link>
+      <Box className='min-h-screen grid  place-items-center '>
+        <Box className='bg-white p-5 rounded-2xl flex '>
+          <RegisterForm />
+        </Box>
       </Box>
     </>
   );
@@ -53,6 +49,7 @@ const schema = zod
 type RegisterFieldType = UserType & zod.infer<typeof schema>;
 
 const RegisterForm = () => {
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -76,7 +73,7 @@ const RegisterForm = () => {
     try {
       const { data } = await axios.post(`${API_URL}/users`, values);
       toast.success('You were registered successfully.');
-      loginUser(data);
+      login(data);
       navigate('/dashboard');
     } catch (error) {
       toast.error('Something went wrong!');
@@ -86,8 +83,19 @@ const RegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Box maxWidth={'sm'}>
-        <Box marginY={2}>
+      <Box maxWidth={400} className='p-5'>
+        <Box marginY={3}>
+          <Typography variant='h4' align='center' fontWeight='bold'>
+            Agent Registration
+          </Typography>
+        </Box>
+
+        <Box marginY={3}>
+          <Typography variant='body1' align='center' color='textSecondary'>
+            Hey. Enter your details to register your account in our system
+          </Typography>
+        </Box>
+        <Box marginY={3}>
           <Controller
             control={control}
             name='name'
@@ -118,7 +126,7 @@ const RegisterForm = () => {
           ></Controller>
         </Box>
 
-        <Box marginY={2}>
+        <Box marginY={3}>
           <Controller
             control={control}
             name='email'
@@ -148,7 +156,7 @@ const RegisterForm = () => {
           ></Controller>
         </Box>
 
-        <Box marginY={2}>
+        <Box marginY={3}>
           <Controller
             control={control}
             name='password'
@@ -190,7 +198,7 @@ const RegisterForm = () => {
           />
         </Box>
 
-        <Box marginY={2}>
+        <Box marginY={3}>
           <Controller
             control={control}
             name='confirmPassword'
@@ -218,8 +226,12 @@ const RegisterForm = () => {
 
         <Box marginY={2}>
           <Button fullWidth type='submit' variant='contained' loading={isSubmitting}>
-            Login
+            Register
           </Button>
+
+          <Box className='mt-2 flex' justifyContent={'flex-end'}>
+            <Link to={'/login'}>Already have an account?</Link>
+          </Box>
         </Box>
       </Box>
     </form>

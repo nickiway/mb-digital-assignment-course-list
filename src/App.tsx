@@ -1,31 +1,44 @@
 /** @format */
 
-import { Route, Routes, useNavigate } from 'react-router';
-import { Button, Container, Grid } from '@mui/material';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { Box, Button, Container, Grid } from '@mui/material';
 import { Outlet } from 'react-router';
 
 import LoginPage from './app/auth/login';
 import RegisterPage from './app/auth/register';
 import DashboardPage from './app/dashboard';
-import { logoutUser } from './app/utils/auth';
 import { Link } from 'react-router-dom';
+import { useAuth } from './providers/AuthProvider';
 
 const App = () => {
   return (
     <Routes>
       <Route element={<RootLayout />}>
-        <Route element={<NotAuthLayout />}>
+        <Route element={<ActionsLayout />}>
           <Route index element={<div>Home</div>}></Route>
-          <Route path='login' element={<LoginPage />} />
-          <Route path='register' element={<RegisterPage />} />
+
+          <Route element={<RequireAuth />}>
+            <Route path='dashboard' element={<DashboardPage />}></Route>
+          </Route>
         </Route>
 
-        <Route element={<AuthLayout />}>
-          <Route path='dashboard' element={<DashboardPage />}></Route>
+        <Route element={<PublicOnly />}>
+          <Route path='login' element={<LoginPage />} />
+          <Route path='register' element={<RegisterPage />} />
         </Route>
       </Route>
     </Routes>
   );
+};
+
+const RequireAuth = () => {
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn ? <Outlet /> : <Navigate to={'/login'} replace />;
+};
+
+const PublicOnly = () => {
+  const { isLoggedIn } = useAuth();
+  return !isLoggedIn ? <Outlet /> : <Navigate to={'/dashboard'} replace />;
 };
 
 const RootLayout = () => {
@@ -35,37 +48,46 @@ const RootLayout = () => {
     </Container>
   );
 };
-
-const AuthLayout = () => {
-  const navigate = useNavigate();
+const ActionsLayout = () => {
+  const { isLoggedIn } = useAuth();
   return (
     <>
-      <Button
-        onClick={() => {
-          logoutUser();
-          navigate('/');
-        }}
-      >
-        Sign Out
-      </Button>
-
+      {isLoggedIn ? <AuthActions /> : <GuestActions />}
       <Outlet />
     </>
   );
 };
-const NotAuthLayout = () => {
+
+const AuthActions = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   return (
-    <>
-      <Grid container gap={3} justifyContent={'flex-end'}>
-        <Grid>
-          <Link to={'/login'}>Sign In</Link>
-        </Grid>
-        <Grid>
-          <Link to={'/register'}>Sign Up</Link>
-        </Grid>
+    <Box className='flex' justifyContent={'flex-end'}>
+      <Button
+        variant='text'
+        style={{ textTransform: 'none', color: 'black' }}
+        onClick={() => {
+          logout();
+          navigate('/', { replace: true });
+        }}
+      >
+        Sign Out
+      </Button>
+    </Box>
+  );
+};
+
+const GuestActions = () => {
+  return (
+    <Grid container gap={3} justifyContent={'flex-end'}>
+      <Grid>
+        <Link to={'/login'}>Sign In</Link>
       </Grid>
-      <Outlet />
-    </>
+      <Grid>
+        <Link to={'/register'}>Sign Up</Link>
+      </Grid>
+    </Grid>
   );
 };
 export default App;

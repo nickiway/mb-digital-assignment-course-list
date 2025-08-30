@@ -1,12 +1,12 @@
 /** @format */
 
-import { Box, Button, Grid, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import type { CourseType } from '../../types/courses';
-import '../../../index.css';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { selectCourse, setBoughtCourse } from '../../lib/slices/courseSlice';
-import { toast } from 'react-toastify';
+import { Box, Grid, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import type { CourseType } from '../../../types/courses';
+import { useAppDispatch } from '../../../lib/hooks';
+import { selectCourse } from '../../../lib/slices/courseSlice';
+import { truncate } from 'lodash';
+import BuyButton from './BuyButton';
 
 interface CourseItemProps {
   course: CourseType;
@@ -14,13 +14,10 @@ interface CourseItemProps {
 
 const CourseItem = ({ course }: CourseItemProps) => {
   const dispatch = useAppDispatch();
-  const [loadingPayment, setLoadingPayment] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const boughtCourses: string[] = useAppSelector((state) => state.course.boughtCourses);
 
   const { id, description, price, title, imageURL } = course;
-  const isCourseBought = !boughtCourses.every((courseId) => courseId !== id);
 
   useEffect(() => {
     if (!imageURL) return;
@@ -38,35 +35,8 @@ const CourseItem = ({ course }: CourseItemProps) => {
     };
   }, [imageURL]);
 
-  const imitatePayment = new Promise<{ message: string }>((resolve, reject) => {
-    const sleep = 3000;
-    setTimeout(() => {
-      const random = Math.random() * 100;
-      if (random > 50) {
-        reject(new Error('Payment failed'));
-      } else {
-        resolve({ message: 'Congratulations! Course successfully bought' });
-      }
-    }, sleep);
-  });
-
   const onDetailsOpen = () => {
     dispatch(selectCourse(course));
-  };
-
-  const onBuyClick = async (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setLoadingPayment(true);
-    try {
-      const result = await imitatePayment;
-      dispatch(setBoughtCourse(id));
-      toast.success(result.message);
-    } catch (error) {
-      console.error(error);
-      toast.error('Oops. Something went wrong');
-    } finally {
-      setLoadingPayment(false);
-    }
   };
 
   return (
@@ -82,7 +52,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
         {!error ? (
           <img
             src={imageURL}
-            alt=''
+            alt='Course image'
             className={`rounded-t-lg absolute inset-0 w-full h-full object-cover ${
               loaded ? 'opacity-100' : 'opacity-0'
             }`}
@@ -90,8 +60,8 @@ const CourseItem = ({ course }: CourseItemProps) => {
             onError={() => setError(true)}
           />
         ) : (
-          <Box className='rounded-t-lg w-full h-full flex items-center justify-center bg-gray-200 text-red-500'>
-            Oops! Something went wrong.
+          <Box className='rounded-t-lg w-full h-full flex items-center justify-center bg-gray-200 '>
+            Couldn't load image
           </Box>
         )}
         {!loaded && !error && (
@@ -109,16 +79,10 @@ const CourseItem = ({ course }: CourseItemProps) => {
         <Typography variant='caption' className='text-green-500'>
           Get {Math.floor(price * 5)} coins on purchase
         </Typography>
-        <Typography variant='body2'>{description}</Typography>
+        <Typography variant='body2'>{truncate(description, { length: 100 })}</Typography>
 
         <Box className='mt-5'>
-          {isCourseBought ? (
-            <Typography className='bg-gray-300 p-2 text-center'>You already purchased this course</Typography>
-          ) : (
-            <Button fullWidth color='secondary' variant='contained' onClick={onBuyClick} loading={loadingPayment}>
-              Purchase
-            </Button>
-          )}
+          <BuyButton id={id} />
         </Box>
       </Box>
     </Grid>

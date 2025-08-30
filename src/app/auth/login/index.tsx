@@ -2,29 +2,25 @@
 
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, IconButton, InputAdornment, TextField, Button } from '@mui/material';
+import { Box, IconButton, InputAdornment, TextField, Button, Typography } from '@mui/material';
 import { Visibility, VisibilityOff, AlternateEmail } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { useState } from 'react';
-import { loginUser, userLogged } from '../../utils/auth';
-import { Navigate } from 'react-router';
-import { API_URL } from '../../constants';
+import { API_URL } from '../../../constants';
 import axios from 'axios';
-import type { UserType } from '../../types/user';
+import type { UserType } from '../../../types/user';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../../providers/AuthProvider';
 
 const LoginPage = () => {
-  // if user logged in we redirect user to dashboard page
-  if (userLogged()) {
-    return <Navigate to={'/dashboard'} replace />;
-  }
-
   return (
-    <>
-      <div>Login page</div>
-      <LoginForm />
-    </>
+    <Box className='min-h-screen grid  place-items-center '>
+      <Box className='bg-white p-5 rounded-2xl flex '>
+        <LoginForm />
+      </Box>
+    </Box>
   );
 };
 
@@ -42,6 +38,8 @@ type FieldType = zod.infer<typeof schema>;
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const {
     control,
@@ -84,15 +82,27 @@ const LoginForm = () => {
       return;
     }
 
-    loginUser(user);
+    login(user);
     toast.success('You logged in successfully.');
     navigate('/dashboard');
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Box maxWidth={'sm'}>
-        <Box marginY={2}>
+      <Box maxWidth={400} className='p-5'>
+        <Box marginY={3}>
+          <Typography variant='h4' align='center' fontWeight='bold'>
+            Agent Login
+          </Typography>
+        </Box>
+
+        <Box marginY={3}>
+          <Typography variant='body1' align='center' color='textSecondary'>
+            Hey. Enter your details to get sign in to your account
+          </Typography>
+        </Box>
+
+        <Box marginY={3}>
           <Controller
             control={control}
             name='email'
@@ -123,7 +133,7 @@ const LoginForm = () => {
           ></Controller>
         </Box>
 
-        <Box marginY={2}>
+        <Box marginY={3}>
           <Controller
             control={control}
             name='password'
@@ -165,10 +175,17 @@ const LoginForm = () => {
             )}
           />
         </Box>
+
+        <Box marginY={2}>
+          <Button type='submit' fullWidth variant='contained' loading={isSubmitting}>
+            Login
+          </Button>
+
+          <Box className='mt-2 flex' justifyContent={'flex-end'}>
+            <Link to={'/register'}>Don't have an account yet?</Link>
+          </Box>
+        </Box>
       </Box>
-      <Button type='submit' variant='contained' loading={isSubmitting}>
-        Login
-      </Button>
     </form>
   );
 };
