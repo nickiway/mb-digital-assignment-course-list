@@ -7,6 +7,10 @@ export const loginUser = (user: UserType) => {
   localStorage.setItem('currentUser', JSON.stringify({ name, email }));
 };
 
+export const logoutUser = () => {
+  localStorage.removeItem('currentUser');
+};
+
 export const userLogged = () => {
   const user = localStorage.getItem('currentUser');
   console.log(user);
