@@ -16,13 +16,13 @@ const App = () => {
       <Route element={<RootLayout />}>
         <Route element={<NotAuthLayout />}>
           <Route index element={<div>Home</div>}></Route>
+          <Route path='login' element={<LoginPage />} />
+          <Route path='register' element={<RegisterPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
           <Route path='dashboard' element={<DashboardPage />}></Route>
         </Route>
-        <Route path='login' element={<LoginPage />} />
-        <Route path='register' element={<RegisterPage />} />
       </Route>
     </Routes>
   );

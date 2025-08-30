@@ -6,7 +6,7 @@ import type { CourseType } from '../../types/courses';
 
 interface CoursesState {
   selectedCourse: CourseType | null;
-  boughtCourses: CourseType[];
+  boughtCourses: string[]; // we will store array of ids
 }
 
 const initialState = {
@@ -24,7 +24,7 @@ export const coursesSlice = createSlice({
     selectCourse: (state, action: PayloadAction<CourseType>) => {
       state.selectedCourse = action.payload;
     },
-    setBoughtCourse: (state, action: PayloadAction<CourseType>) => {
+    setBoughtCourse: (state, action: PayloadAction<string>) => {
       state.boughtCourses.push(action.payload);
     },
   },

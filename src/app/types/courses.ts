@@ -5,5 +5,6 @@ export type CourseType = {
   title: string;
   description: string;
   videoURL: string;
+  imageURL: string;
   price: number;
 };

@@ -46,7 +46,7 @@ const LoginForm = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FieldType>({
     mode: 'all',
     resolver: zodResolver(schema),
@@ -166,7 +166,7 @@ const LoginForm = () => {
           />
         </Box>
       </Box>
-      <Button type='submit' variant='contained'>
+      <Button type='submit' variant='contained' loading={isSubmitting}>
         Login
       </Button>
     </form>

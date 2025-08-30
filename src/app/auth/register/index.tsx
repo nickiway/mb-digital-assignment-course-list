@@ -12,7 +12,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import type { UserType } from '../../types/user';
 import { toast } from 'react-toastify';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { loginUser, userLogged } from '../../utils/auth';
 
 const RegisterPage = () => {
@@ -54,6 +54,8 @@ type RegisterFieldType = UserType & zod.infer<typeof schema>;
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
@@ -75,6 +77,7 @@ const RegisterForm = () => {
       const { data } = await axios.post(`${API_URL}/users`, values);
       toast.success('You were registered successfully.');
       loginUser(data);
+      navigate('/dashboard');
     } catch (error) {
       toast.error('Something went wrong!');
       console.error(error);
