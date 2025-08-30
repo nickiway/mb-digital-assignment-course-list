@@ -22,13 +22,12 @@ const initialState = {
 } satisfies VideoState as VideoState;
 
 export const videoSlice = createSlice({
-  name: 'users',
+  name: 'video',
   initialState,
   reducers: {
     resetVideo: () => initialState,
 
-    setVideoUrl: (state, action: PayloadAction<string | null>) => {
-      state.url = action.payload;
+    setVideoUrl: (state) => {
       state.status = 'idle';
       state.videoTime = 0;
     },

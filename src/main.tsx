@@ -1,6 +1,5 @@
 /** @format */
 
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { BrowserRouter as Router } from 'react-router';
@@ -10,12 +9,10 @@ import App from './App.tsx';
 import { ToastContainer } from 'react-toastify';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <Router>
-        <App />
-        <ToastContainer />
-      </Router>
-    </Provider>
-  </StrictMode>
+  <Provider store={store}>
+    <Router>
+      <App />
+      <ToastContainer />
+    </Router>
+  </Provider>
 );

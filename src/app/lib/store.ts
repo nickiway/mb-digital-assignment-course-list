@@ -1,12 +1,12 @@
 /** @format */
 
 import { configureStore } from '@reduxjs/toolkit';
-import coursesReducer from './slices/coursesSlice';
+import coursesReducer from './slices/courseSlice';
 import videoReducer from './slices/videoSlice';
 
 export const store = configureStore({
   reducer: {
-    courses: coursesReducer,
+    course: coursesReducer,
     video: videoReducer,
   },
 });

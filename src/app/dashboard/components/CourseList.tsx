@@ -7,21 +7,10 @@ import { API_URL } from '../../constants';
 import { Grid } from '@mui/material';
 import type { CourseType } from '../../types/courses';
 import CourseItem from './CourseItem';
-import VideoDialog from './VideoDialog';
-import { useAppDispatch } from '../../lib/hooks';
-import { resetVideo, setVideoUrl } from '../../lib/slices/videoSlice';
+import CourseDetailDialogProps from './CourseDetailDialogProps';
 
 const CourseList = () => {
-  const dispatch = useAppDispatch();
   const [courses, setCourses] = useState<CourseType[]>([]);
-
-  const onOpenVideo = (url: string) => {
-    dispatch(setVideoUrl(url));
-  };
-
-  const onCloseVideo = () => {
-    dispatch(resetVideo());
-  };
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -36,11 +25,11 @@ const CourseList = () => {
     <>
       <Grid container gap={2}>
         {courses.map((course: CourseType) => (
-          <CourseItem key={course.id} course={course} onOpenVideo={onOpenVideo} />
+          <CourseItem key={course.id} course={course} />
         ))}
       </Grid>
 
-      <VideoDialog onCloseVideo={onCloseVideo} />
+      <CourseDetailDialogProps />
     </>
   );
 };

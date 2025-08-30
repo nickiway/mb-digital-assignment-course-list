@@ -3,20 +3,25 @@
 import { Button, Grid, Typography } from '@mui/material';
 import type { CourseType } from '../../types/courses';
 import '../../../index.css';
+import { useAppDispatch } from '../../lib/hooks';
+import { selectCourse } from '../../lib/slices/courseSlice';
 
 interface CourseItemProps {
   course: CourseType;
-  onOpenVideo: (url: string) => void;
 }
 
-const CourseItem = ({ course, onOpenVideo }: CourseItemProps) => {
+const CourseItem = ({ course }: CourseItemProps) => {
+  const dispatch = useAppDispatch();
+
   const { description, price, title } = course;
+
+  const onDetailsOpen = () => {
+    dispatch(selectCourse(course));
+  };
 
   return (
     <Grid
-      onClick={() => {
-        onOpenVideo(course.videoURL);
-      }}
+      onClick={onDetailsOpen}
       size={{
         xs: 12,
         md: 5,
