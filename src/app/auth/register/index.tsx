@@ -15,20 +15,6 @@ import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../providers/AuthProvider';
 
-const RegisterPage = () => {
-  // if user logged in we redirect user to dashboard page
-
-  return (
-    <>
-      <Box className='min-h-screen grid  place-items-center '>
-        <Box className='bg-white p-5 rounded-2xl flex '>
-          <RegisterForm />
-        </Box>
-      </Box>
-    </>
-  );
-};
-
 const schema = zod
   .object({
     email: zod.email(),
@@ -47,6 +33,18 @@ const schema = zod
   });
 
 type RegisterFieldType = UserType & zod.infer<typeof schema>;
+
+const RegisterPage = () => {
+  return (
+    <>
+      <Box className='min-h-screen grid  place-items-center '>
+        <Box className='bg-white p-5 rounded-2xl flex '>
+          <RegisterForm />
+        </Box>
+      </Box>
+    </>
+  );
+};
 
 const RegisterForm = () => {
   const { login } = useAuth();

@@ -14,16 +14,6 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../providers/AuthProvider';
 
-const LoginPage = () => {
-  return (
-    <Box className='min-h-screen grid  place-items-center '>
-      <Box className='bg-white p-5 rounded-2xl flex '>
-        <LoginForm />
-      </Box>
-    </Box>
-  );
-};
-
 const schema = zod.object({
   email: zod.email(),
   password: zod
@@ -35,6 +25,16 @@ const schema = zod.object({
 });
 
 type FieldType = zod.infer<typeof schema>;
+
+const LoginPage = () => {
+  return (
+    <Box className='min-h-screen grid  place-items-center '>
+      <Box className='bg-white p-5 rounded-2xl flex '>
+        <LoginForm />
+      </Box>
+    </Box>
+  );
+};
 
 const LoginForm = () => {
   const navigate = useNavigate();

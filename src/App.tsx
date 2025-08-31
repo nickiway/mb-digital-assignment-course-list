@@ -9,13 +9,14 @@ import RegisterPage from './app/auth/register';
 import DashboardPage from './app/dashboard';
 import { Link } from 'react-router-dom';
 import { useAuth } from './providers/AuthProvider';
+import Home from './app/home';
 
 const App = () => {
   return (
     <Routes>
       <Route element={<RootLayout />}>
         <Route element={<ActionsLayout />}>
-          <Route index element={<div>Home</div>}></Route>
+          <Route index element={<Home />}></Route>
 
           <Route element={<RequireAuth />}>
             <Route path='dashboard' element={<DashboardPage />}></Route>

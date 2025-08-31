@@ -2,7 +2,7 @@
 
 import { Box, Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { resetVideo, setDuration, setMuted, setStatus, setVideoTime, setVolume } from '../../../lib/slices/videoSlice';
 import { removeSelectedCourse } from '../../../lib/slices/courseSlice';
 import { throttle } from 'lodash';
@@ -23,7 +23,7 @@ const CourseDetailDialog = () => {
   const { id, description, price, title, videoURL } = course;
 
   return (
-    <Dialog maxWidth='sm' open={open} onClose={onCloseVideo}>
+    <Dialog maxWidth='md' fullWidth open={open} onClose={onCloseVideo}>
       <DialogContent>
         <VideoPortal url={videoURL} />
         <InformationSection description={description} price={price} title={title} />
@@ -51,12 +51,14 @@ interface VideoPortalInterface {
 }
 
 const VideoPortal = ({ url }: VideoPortalInterface) => {
+  const [loadingStatus, setLoadingStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLVideoElement>(null);
 
   const onLoadedMetadata = () => {
     if (ref.current) {
       dispatch(setDuration(ref.current.duration));
+      setLoadingStatus('ready');
     }
   };
 
@@ -103,6 +105,10 @@ const VideoPortal = ({ url }: VideoPortalInterface) => {
     return () => element.removeEventListener('timeupdate', handleTimeUpdate);
   }, [dispatch, ref]);
 
+  if (loadingStatus === 'error') {
+    return <Typography alignContent={'center'}>⚠️ Couldn’t load video</Typography>;
+  }
+
   return (
     <Box className='bg-red-50'>
       {url && (
@@ -115,8 +121,23 @@ const VideoPortal = ({ url }: VideoPortalInterface) => {
           onEnded={onEnded}
           onPlay={onPlay}
           onLoadedMetadata={onLoadedMetadata}
+          onLoadedData={() => {
+            setLoadingStatus('ready');
+            console.log('ready');
+          }}
+          onError={() => {
+            setLoadingStatus('error');
+            console.log('error');
+          }}
         >
-          <source src={url} type='video/mp4' />
+          <source
+            src={url}
+            type='video/mp4'
+            onError={() => {
+              setLoadingStatus('error');
+              console.log('error');
+            }}
+          />
         </video>
       )}
     </Box>
